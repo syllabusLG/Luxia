@@ -1,0 +1,124 @@
+import email, os
+
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+# FTP Variables
+myHostName = "52.47.123.17"
+myUsername = "ibbl"
+keyFile = "/home/robot/bin/LUXIA/sftp-key/Luxia-sftp"
+KeyFileWrong = ""
+
+# email Variables
+host = "smtp.lih.lu"
+port = "25"
+fromaddr = "IBBL - LUXIA FastQ File transfer <robot@lih.lu>"
+
+# Folders
+# path = "/labdata/Hierarchy/METADATA_ROUTINE/_LUXIA_DATA_TRANSFER/ROUTINE/"
+# files = os.listdir(path)
+var_files = []
+# check_sum_file = "/labdata/Hierarchy/METADATA_ROUTINE/_LUXIA_DATA_TRANSFER/ROUTINE/luxia_list.md5"
+
+# Distribution Lists
+# client="contact@luxia-scientific.com"
+# bioref = ['lorieza.castillo@ibbl.lu', 'wim.ammerlaan@ibbl.lu']
+# pm = ['maria-manuela.tonini@ibbl.lu']
+# ibbl = pm + bioref + bis + 'robot_transfer@ibbl.lu'
+# helpdesk = 'helpdesk@lih.lu'
+# bis = ['robot_transfer@lih.lu']
+
+# For Testing purposes
+path = "/labdata/Hierarchy/METADATA_ROUTINE/_LUXIA_DATA_TRANSFER/DONT_TOUCH_FOR_TESTS_PURPOSES/"
+cas1 = path + "CASE1-NOT-ONLY-LX/"
+cas2 = path + "CASE2-OK/"
+cas3 = path + "CASE3-IMPAIR/"
+cas4 = path + "CASE4-EXTENSION/"
+cas5 = path + "CASE5-NOT-A-FOLDER"
+cas6 = path + "CASE6-FOLDER-EMPTY/"
+
+if os.path.isdir(cas2):
+    files = os.listdir(cas2)
+    for file in files:
+        var_files.append(file+"<br/>")
+        
+list_files = ''.join(var_files)
+        
+#check_sum_file = path + "luxia_list.md5"
+client = 'ariane.asselekama@gmail.com'
+bioref = ['ariane.assele-kama@ibbl.lu', ';abousyllaba.ndiaye@ibbl.lu']
+pm = ['ariane.assele-kama@ibbl.lu', ';syllaba89@gmail.com', ';ariane.asselekama@gmail.com']
+bis = ['ariane.assele-kama@ibbl.lu', ';abousyllaba.ndiaye@ibbl.lu', ';ariane.asselekama@gmail.com']
+ibbl = pm + [';'] + bioref + [';'] + bis + [';'] + ['ariane.assele-kama@ibbl.lu']
+helpdesk = 'ariane.assele-kama@ibbl.lu'
+
+# Folder doesn't exist
+folder_msg = MIMEMultipart()
+folder_msg['From'] = fromaddr
+folder_msg['To'] = ''.join(helpdesk)
+folder_msg['Cc'] = ''.join(bis)
+folder_msg['Subject'] = "[ERROR] LUXIA - FastQ transfer files - Folder doesn't exist"
+start = """Dear BIS Team,<br/><br/>Please have a look on the folder located at <br/><br/><b>"""
+end = """</b><br/><br/>It seems that this path doesn't not exist anymore. Please have a look in order to perform the Luxia transfer.<br/><br/>No files have been sent to the client.<br/><br/>Regards.<br/>IBBL Business Information Solution"""
+body = start + format(cas5) + end
+folder_msg.attach(MIMEText(body, 'html'))
+message_to_bis = folder_msg.as_string()
+
+# Cannot access to FTP
+ftp_msg = MIMEMultipart()
+ftp_msg['From'] = fromaddr
+ftp_msg['To'] = client
+ftp_msg['Cc'] = ''.join(ibbl)
+ftp_msg['Subject'] = "[ERROR] LUXIA - FastQ transfer files - Cannot access to the FTP"
+body = """Dear CLient,<br/><br/>We are facing some errors to access to your FTP site.<br/><br/>Could you please have a look and come back to us ?.<br/><br/>Regards.<br/>IBBL Business Information Solution"""
+ftp_msg.attach(MIMEText(body, 'html'))
+message_for_ftp_error = ftp_msg.as_string()
+
+# Incorrect Luxia files
+biorep_msg = MIMEMultipart()
+biorep_msg['From'] = fromaddr
+biorep_msg['To'] = ''.join(bioref)
+biorep_msg['Cc'] = ''.join(bis) + ";" + ''.join(pm)
+biorep_msg['Subject'] = "[ERROR] LUXIA - FastQ transfer files - Incorrect Luxia files in the folder (number and/or extension)"
+start = """Dear BIOREF Team,<br/><br/>Please have a look on the files list below : <br/><br/><b>"""
+end = """</b><br/><br/>There is an error on the list provided for FTP transfer to LUXIA. Please have a look on the number of files and/or extension, and correct them in order to perform the Luxia transfer.<br/><br/>No files have been sent to the client.<br/><br/>Regards.<br/>IBBL Business Information Solution"""
+body = start + list_files + end
+biorep_msg.attach(MIMEText(body, 'html'))
+message_error_bad_luxia = biorep_msg.as_string()
+
+# Incorrect not only Luxia files
+biorep_msg2 = MIMEMultipart()
+biorep_msg2['From'] = fromaddr
+biorep_msg2['To'] = ''.join(bioref)
+biorep_msg2['Cc'] = ''.join(bis) + ";" + ''.join(pm)
+biorep_msg2['Subject'] = "[ERROR] LUXIA - FastQ transfer files - Incorrect Luxia files in the folder (wrong extension)"
+start = """Dear BIOREF Team,<br/><br/>Please have a look on the files list below : <br/><br/><b>"""
+end = """</b><br/><br/>There is an error on the  list provided for FTP transfer to LUXIA. Some files are not respecting Luxia files naming rules. Please have a look and correct them in order to perform the Luxia transfer.<br/><br/>No files have been sent to the client.<br/><br/>Regards.<br/>IBBL Business Information Solution"""
+body = start + list_files + end
+biorep_msg2.attach(MIMEText(body, 'html'))
+message_error_not_only_luxia = biorep_msg2.as_string()
+
+# Success
+client_msg = MIMEMultipart()
+client_msg['From'] = fromaddr
+client_msg['To'] = ''.join(client)
+client_msg['Cc'] = ''.join(ibbl)
+client_msg['Subject'] = "[SUCCESS] LUXIA - FastQ transfer files"
+start = """Dear Client,<br/><br/>Please find below the FastQ files transfered.<br/><br/><b>"""
+end = """</b><br/><br/>Regards.<br/>IBBL Business Information Solution"""
+body = start + list_files + end
+client_msg.attach(MIMEText(body, 'html'))
+message_success = client_msg.as_string()
+
+# No Files
+bis_msg = MIMEMultipart()
+bis_msg['From'] = fromaddr
+bis_msg['To'] = ''.join(bis)
+bis_msg['Subject'] = "[INFO] LUXIA - FastQ transfer files"
+body = """Dear BIS Team,<br/><br/>The automatic script for LUXIA files transfer ran well. But there is no files to transfer.<br/><br/>Regards.<br/>IBBL Business Information Solution"""
+bis_msg.attach(MIMEText(body, 'html'))
+message_no_files = bis_msg.as_string()
+
+

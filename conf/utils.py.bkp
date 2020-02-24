@@ -1,0 +1,125 @@
+# FTP Variables
+myHostName = "52.47.123.17"
+myUsername = "ibbl"
+keyFile = "/home/robot/bin/LUXIA/sftp-key"
+KeyFileWrong = ""
+
+# email Variables
+host = "smtp.lih.lu"
+port = "25"
+exp = 'robot@lih.lu'
+
+# Folders
+# path = "/labdata/Hierarchy/METADATA_ROUTINE/_LUXIA_DATA_TRANSFER/ROUTINE/"
+# check_sum_file = "/labdata/Hierarchy/METADATA_ROUTINE/_LUXIA_DATA_TRANSFER/ROUTINE/luxia_list.md5"
+
+# Distribution Lists
+# client="contact@luxia-scientific.com"
+# bioref="lorieza.castillo@ibbl.lu; wim.ammerlaan@ibbl.lu"
+# pm="maria-manuela.tonini@ibbl.lu"
+# ibbl = 'maria-manuela.tonini@ibbl.lu; lorieza.castillo@ibbl.lu; wim.ammerlaan@ibbl.lu; robot_transfer@ibbl.lu'
+# helpdesk = 'helpdesk@lih.lu'
+
+
+# For Testing purposes
+path = "/labdata/Hierarchy/METADATA_ROUTINE/_LUXIA_DATA_TRANSFER/ROUTINE/DONT_TOUCH_FOR_TESTS_PURPOSES/"
+cas1 = path + "CASE1-NOT-ONLY-LX"
+cas2 = path + "CASE2-OK"
+cas3 = path + "CASE3-IMPAIR"
+cas4 = path + "CASE4-EXTENSION"
+cas5 = path + "CASE5-NOT-A-FOLDER"
+check_sum_file = "/labdata/Hierarchy/METADATA_ROUTINE/_LUXIA_DATA_TRANSFER/ROUTINE/DONT_TOUCH_FOR_TESTS_PURPOSES/luxia_list.md5"
+client = "syllaba89@gmail.com;ariane.asselekama@gmail.com"
+bioref = 'abousyllaba.ndiaye@ibbl.lu;ariane.assele-kama@ibbl.lu'
+ibbl = 'abousyllaba.ndiaye@ibbl.lu;ariane.assele-kama@ibbl.lu'
+helpdesk = 'ariane.assele-kama@ibbl.lu'
+
+
+# Folder doesn't exist
+message_to_bis = """From: IBBL - LUXIA FastQ File transfer <robot@lih.lu>
+To: IBBL BIS Team <helpdesk@lih.lu>
+Cc: ariane.assele-kama@ibbl.lu;abousyllaba.ndiaye@ibbl.lu
+MIME-Version: 1.0
+Content-type: text/html
+Subject: [ERROR] LUXIA - FastQ transfer files - Folder doesn't exist
+
+Dear BIS Team,
+<br/><br/>
+Please have a look on the folder <b>print(path)</b>
+<br/><br/>
+It seems that the path doesn't not exist.
+<br/><br/>
+No files have been sent to the client.
+<br/><br/>
+Regards.<br/>
+IBBL Business Information Solution
+
+"""
+
+# Canno't access to FTP
+message_for_ftp_error = """From: IBBL - LUXIA FastQ File transfer <robot@lih.lu>
+To: Luxia Scientific <client_receivers>
+Cc: ariane.assele-kama@ibbl.lu
+MIME-Version: 1.0
+Content-type: text/html
+Subject: [ERROR] LUXIA - FastQ transfer files - Cannot access to the FTP
+
+Dear CLient,
+<br/><br/>
+We are facing some errors to access to your FTP site</b>.<br/> 
+
+Could you please have a look and come back to us ?.<br/><br/>
+
+Regards.<br/>
+IBBL Business Information Solution
+"""
+
+# Incorrect Luxia files
+message_error_not_only_luxia = """From: IBBL - LUXIA FastQ File transfer <robot@lih.lu>
+To: BIOREF Team <lorieza.castillo@ibbl.lu; wim.ammerlaan@ibbl.lu>
+cc: maria-manuela.tonini@ibbl.lu; 
+MIME-Version: 1.0
+Content-type: text/html
+Subject: [ERROR] LUXIA - FastQ transfer files - Incorrect Luxia files in the folder
+
+Dear BIOREF Team,
+<br/><br/>
+There is an error on the file list provide in the folder, for FTP transfer to LUXIA.<br/>
+Some files are not a Luxia files.<br/>
+Please make the correction.<br/><br/>
+Regards. <br/>
+IBBL Business Information Solution
+"""
+
+# Incorrect format files
+message_error_bad_luxia = """From: IBBL - LUXIA FastQ File transfer <robot@lih.lu>
+To: IBBL BIS Team <IBBLIT@ibbl.lu>
+MIME-Version: 1.0
+Content-type: text/html
+Subject: [ERROR] LUXIA - FastQ transfer files - Incorrect Luxia files format in the folder
+
+Dear BIOREF Team,
+<br/><br/>
+There is an error on the file list provide in the folder, for FTP transfer to LUXIA.<br/>
+Some files don't have the correct Luxia file configuration.<br/>
+Please make the correction.<br/><br/>
+Regards. <br/>
+IBBL Business Information Solution
+"""
+
+# Success
+message_success = """From: IBBL - LUXIA FastQ File transfer <robot@ibbl.lih.lu>
+To: IBBL BIS Team <IBBLIT@ibbl.lu>
+cc:
+MIME-Version: 1.0
+Content-type: text/html
+Subject: [SUCCESS] LUXIA - FastQ transfer files
+
+Dear all,
+<br/><br/>
+Please find below the FastQ files transfered.<br/><br/>
+<b>files</b><br/><br/>
+Regards.<br/>
+IBBL Business Information Solution
+
+"""

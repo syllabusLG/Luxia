@@ -1,0 +1,6 @@
+import os
+
+files = os.listdir(folder)
+
+mycmd = 'ls -la > out.txt'
+os.system(mycmd)

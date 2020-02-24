@@ -1,0 +1,110 @@
+import sys
+import os
+import logging
+from logging.handlers import RotatingFileHandler
+
+try:
+    from library.functions import *
+    from conf.utils import *
+except FileNotFoundError as e:
+    e, = e.args
+    print("'{}' is missing.".format(str(e)))
+    sys.exit(1)
+
+log_path = '/home/robot/logs/LUXIA/'
+# Tests
+#path=cas1
+path=cas2
+#path=cas3
+#path=cas4
+#path=cas5
+#path=cas6
+
+if __name__ == "__main__":
+
+    """Log all kind of informations"""
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
+    file_handler = RotatingFileHandler('Luxia_ftp_transfer.log', 'a', 1000000, 1)
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.DEBUG)
+    logger.addHandler(stream_handler)
+    
+    """Check if the folder exists"""
+    if os.path.exists(path):
+        logger.info('Folder exists')
+    else:
+        sendMail(host,port, fromaddr, helpdesk, message_to_bis)
+        # send email to prevent BIS that transfer forlder doesn't exists 
+        logger.error('Folder does not exists')
+        sys.exit(1)
+
+    """Check empty folder"""
+    if folder_is_not_empty(path):
+       logger.info('Folder is not empty')
+    else:
+       sendMail(host, port, fromaddr, bioref, message_no_files)
+       # send email to prevent BIS that there is no files in the folder
+       logger.warning('Email sent to BIS : The script ran well, but there is no files to transfer.')
+       sys.exit(1)
+    
+    """Check if files are luxia files"""
+    if check_file(path):
+        logger.info('Files are Luxia files')
+    else:
+        sendMail(host,port, fromaddr, bioref, message_error_not_only_luxia)
+        # send email to prevent BOIREF that files are not only Luxia files
+        logger.error('Email sent to BIOREP : not only Luxia files in folder')
+        sys.exit(1)
+    
+    """Check if files extensions are correct"""
+    if check_extension(path):
+        logger.info('Files extensions are correct')
+    else:
+        sendMail(host, port, fromaddr, bioref, message_error_not_only_luxia)
+        # send email to prevent bioref that files extensions are wrong
+        logger.error('Email sent to BIOREF : files extension incorrect')
+        sys.exit(1)
+
+    """Check if the number of files is even"""
+    if is_files_pair(path):
+        logger.info('Number of files is even')
+    else:
+        sendMail(host, port, fromaddr, bioref, message_error_bad_luxia)
+        # send email to prevent bioref that there are missing files
+        logger.error('Email sent to BIOREF : some files are missing (number of files is ODD)')
+        sys.exit(1)
+
+    """Check if files contain the right R1 and R2"""
+    if check_number_file_r1_r2(path):
+        logger.info('Files are fine now you can start the transfer')
+    else:
+        sendMail(host, port, fromaddr, bioref, message_error_bad_luxia)
+        # send email to prevent bioref that there are missing files
+        logger.error('Email sent to BIOREF : some files are missing (some R1/R2 files are missing)')
+        sys.exit(1)
+
+    #Generate check sum
+    check_sum_file = check_sum(path)
+    logger.info('Checksum file created')
+
+    """connect to Luxia SFTP server"""
+    print(myHostName, myUsername, keyFile, path, check_sum_file)
+    if connect_to_sftp(myHostName, myUsername, keyFile, path, check_sum_file):
+        # transfer files to Luxia
+        sendMail(host, port, fromaddr, client, message_success)
+        # FTP Success
+        logger.info('FTP : transfer success')
+        # Delete Files
+        deleteFile(path)
+        logger.info('Files have been deleted')
+    else:
+        # send email to prevent that transfer is failed
+        sendMail(host, port, fromaddr, client, message_for_ftp_error)
+        logger.error('Email sent to CLIENT : cannot access to the FTP server')
+
+    
